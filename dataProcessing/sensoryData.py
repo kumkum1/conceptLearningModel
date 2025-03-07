@@ -1,8 +1,9 @@
 import pandas as pd
+import numpy as np
 
 # Load both Excel datasets
-noun_data = pd.read_excel("./conceptLearningModel/data/rawData/lynott_connell_2013.xls")  # 400 nouns
-adjective_data = pd.read_excel("./conceptLearningModel/data/rawData/lynott_connell_2009.xls")  # 423 adjectives
+noun_data = pd.read_excel("./data/rawData/lynott_connell_2013.xls")  # 400 nouns
+adjective_data = pd.read_excel("./data/rawData/lynott_connell_2009.xls")  # 423 adjectives
 
 # Standardize the column names for nouns dataset
 noun_data = noun_data.rename(columns={
@@ -28,6 +29,11 @@ adjective_data = adjective_data.rename(columns={
 merged_data = pd.concat([noun_data, adjective_data], ignore_index=True)
 
 # Save the merged dataset to CSV
-merged_data.to_csv("./conceptLearningModel/data/processedData/LC823_Merged.csv", index=False)
+merged_data.to_csv("./data/processedData/LC823_Merged.csv", index=False)
 
-print("LC823 dataset successfully merged and saved as 'LC823_Merged.csv'.")
+
+def get_sensory_representation(word):
+    row = merged_data[merged_data["Concept"].str.lower() == word.lower()]
+    if not row.empty:
+        return np.array(row.iloc[0, 1:], dtype=np.float32)  
+    return np.zeros(5)  
