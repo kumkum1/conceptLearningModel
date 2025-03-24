@@ -73,18 +73,18 @@ Used [BrainCog](https://github.com/BrainCog-X/Brain-Cog) to build and run the **
   2. Text-derived-only model
   3. Original SNN model
   4. Proposed Clarion-based model (this project)
-  
+
 
 ## Requirements
 This project uses two frameworks with **conflicting Python version requirements**.  
 To ensure smooth operation, use **separate environments** for each tool.
 
-### 🧠 BrainCog Environment (Concept Vector Generation)
+### BrainCog Environment (Concept Vector Generation)
 - **Python ≤ 3.9** 
 - Required Packages:
   - `BrainCog`
 
-### 🧠 pyClarion Environment (Clarion Modeling)
+### pyClarion Environment (Clarion Modeling)
 - **Python ≥ 3.12** 
 - Required Packages:
   - `pyClarion`
