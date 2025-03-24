@@ -29,7 +29,7 @@ adjective_data = adjective_data.rename(columns={
 merged_data = pd.concat([noun_data, adjective_data], ignore_index=True)
 
 # Save the merged dataset to CSV
-merged_data.to_csv("./data/processedData/LC823_Merged.csv", index=False)
+merged_data.to_excel("./data/processedData/LC823_Merged.xlsx", index=True)
 
 
 def get_sensory_representation(word):

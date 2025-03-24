@@ -45,22 +45,26 @@ The goal is to investigate cognitive processes underlying human concept learning
 - **SensoryData**: Multisensory vectors processed to represent concepts as sensory intensities.  
 - **TextData**: Text-derived concept representations converted to dense vectors. 
 
-### Possion encoding: 
-- converting both input to spiking trains
+### Generating Concept Representations (SNN Model)
+Used [BrainCog](https://github.com/BrainCog-X/Brain-Cog) to build and run the **spiking neural network model**:
+- Based on the methodology from Zeng et al. (2023) [DOI](https://doi.org/10.1016/j.patter.2023.100789)
+- **Output**: Human-like concept vectors (binary/spike representations) saved in `.npy` or `.csv` for downstream use in Clarion.
+@article{Zeng2023,
+  doi = {10.1016/j.patter.2023.100789},
+  url = {https://doi.org/10.1016/j.patter.2023.100789},
+  year = {2023},
+  month = jul,
+  publisher = {Cell Press},
+  pages = {100789},
+  author = {Yi Zeng and Dongcheng Zhao and Feifei Zhao and Guobin Shen and Yiting Dong and Enmeng Lu and Qian Zhang and Yinqian Sun and Qian Liang and Yuxuan Zhao and Zhuoya Zhao and Hongjian Fang and Yuwei Wang and Yang Li and Xin Liu and Chengcheng Du and Qingqun Kong and Zizhe Ruan and Weida Bi},
+  title = {{BrainCog}: A spiking neural network based,  brain-inspired cognitive intelligence engine for brain-inspired {AI} and brain simulation},
+  journal = {Patterns}
+}
 
-### Parallel processing of both
-
-#### Multisensory Module: 
-- Processes sensory spike trains, integrating modalities through associative merging (ACS)
-- Output: A spike distribution matrix (denoted as M_spike) that captures the multisensory information over time.
-
-#### Text-Derived Module:
-- Independently processes linguistic spike trains (NACS)
-- Output: A spike distribution matrix (T_spike) representing the text-derived information.
-
-### Integrating the Two Representations: Semantic Cooperation Module    
-- Dynamically integrates sensory and text-based representations
-- Uses a meta-cognitive subsystem (MCS) to monitor and resolve conflicts between sensory inputs and text labels.
+### Clarion Model
+- Concept vectors from BrainCog are loaded into Clarion as **perceptual chunks**.
+- Each vector = one concept chunk, processed in Clarion’s **New Association Subsystem (NACS)**.
+- These chunks are used in **categorization tasks**, simulating human concept learning and classification.
 
 ### Testing and Evaluation
 - Evaluate the model against human similarity judgments using datasets such as SimLex999, MEN, and MTurk771.
@@ -69,3 +73,18 @@ The goal is to investigate cognitive processes underlying human concept learning
   2. Text-derived-only model
   3. Original SNN model
   4. Proposed Clarion-based model (this project)
+  
+
+## Requirements
+This project uses two frameworks with **conflicting Python version requirements**.  
+To ensure smooth operation, use **separate environments** for each tool.
+
+### 🧠 BrainCog Environment (Concept Vector Generation)
+- **Python ≤ 3.9** 
+- Required Packages:
+  - `BrainCog`
+
+### 🧠 pyClarion Environment (Clarion Modeling)
+- **Python ≥ 3.12** 
+- Required Packages:
+  - `pyClarion`

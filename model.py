@@ -1,28 +1,7 @@
-from pyClarion import * 
-from pyClarion import io
-import pandas as pd
-from dataProcessing.textData import get_text_embedding
-from dataProcessing.sensoryData import get_sensory_representation
+from pyClarion import Chunk, Feature, Key, world, Agent
+import numpy as np
+import pickle
 
-class Sensory(Atoms):
-    auditory: Atom
-    gustatory: Atom
-    haptic: Atom 
-    olfactory: Atom
-    visual: Atom
-
-# chunk_defs = [
-#     + io.input ** Sensory.auditory
-#     + io.input ** Sensory.gustatory
-#     + io.input ** Sensory.haptic
-#     + io.input ** Sensory.olfactory
-#     + io.input ** Sensory.visual,
-# ]
-
-class Text(Atoms):
-    word: Atom
-
-class IO(Atoms):
-    input: Atom
-    output: Atom
-    goal: Atom
+with open("AM_binarycode.pkl", "rb") as f:
+    concept_vectors = pickle.load(f)
+    
