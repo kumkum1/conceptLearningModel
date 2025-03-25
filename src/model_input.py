@@ -1,11 +1,8 @@
-from pyClarion import *
-import numpy as np
 import pickle
 import pandas as pd
 
 with open("AM_binarycode.pkl", "rb") as f:
     concept_vectors = pickle.load(f)
-
 
 df = pd.read_csv('./data/rawData/EN-MTurk-771.txt', sep='\t', header=None, names=["Concept1", "Concept2", "HumanScore"])
 results = []
@@ -38,4 +35,3 @@ vectors = pd.DataFrame({
 })
 
 print(vectors)
-

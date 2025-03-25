@@ -132,7 +132,7 @@ if __name__ == "__main__":
         AM_binarycode_dic[each_concept] = binarycode
         print("AM", each_concept, binarycode)
 
-    with open('AM_binarycode.pkl', 'wb') as AM_binarycode_file:
+    with open('./data/processedData/AM_binarycode.pkl', 'wb') as AM_binarycode_file:
         pickle.dump(AM_binarycode_dic, AM_binarycode_file)
     # pickle.dump (AM_binarycode_dic, AM_binarycode_file)
     AM_binarycode_file.close ()
