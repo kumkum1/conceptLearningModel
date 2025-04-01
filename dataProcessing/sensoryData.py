@@ -28,6 +28,8 @@ adjective_data = adjective_data.rename(columns={
 # Merge the two datasets
 merged_data = pd.concat([noun_data, adjective_data], ignore_index=True)
 
+merged_data = merged_data.drop_duplicates(subset="Concept", keep="first")
+
 # Save the merged dataset to CSV
 merged_data.to_excel("./data/processedData/LC823_Merged.xlsx", index=True)
 
