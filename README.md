@@ -1,54 +1,24 @@
 # Human-like Concept Learning Computational Model
-
-## Project Overview
-Developing a computational model for human-like concept learning using the Clarion cognitive-science framework. The model integrates multisensory and text-derived representations of concepts, dynamically combining them to emulate human cognition closely.
+A cognitive architecture that models human-like concept learning using the Clarion framework, enhanced with human-like binary concept vectors derived from a spiking neural network (SNN). This approach integrates multisensory features with brain-inspired representations, simulating internal processes of similarity judgment and concept recall
 
 ## Goal 
-The goal is to investigate cognitive processes underlying human concept learning rather than solely optimizing model fit.
+The goal is to model and understand human concept learning mechanisms, using cognitively grounded processes rather than purely optimizing statistical fit
 
-## Datasets Used
+## Datasets 
 
-### Multisensory Representation Datasets
-#### 1. LC823 Multisensory Dataset
-- **Source**: Lynott & Connell (2009, 2013)
-- **Data Format**: 5-dimensional vectors representing sensory intensity across:
-  - Auditory
-  - Gustatory
-  - Haptic
-  - Olfactory
-  - Visual
-- **Total Concepts**: 823 (423 adjectives + 400 nouns)
-- **Official Sources:**
-  - [Adjective Dataset](https://link.springer.com/article/10.3758/BRM.41.2.558)
-  - [Noun Dataset](https://link.springer.com/article/10.3758/s13428-012-0267-0)
+### Multisensory Representation 
+1. **LC823 Dataset** (Lynott & Connell, 2009, 2013)  
+   - 5D perceptual vectors across:  
+     `auditory`, `gustatory`, `haptic`, `olfactory`, `visual`  
+   - [Adjective Dataset](https://link.springer.com/article/10.3758/BRM.41.2.558)  
+   - [Noun Dataset](https://link.springer.com/article/10.3758/s13428-012-0267-0)
 
-#### 2. BBSR Dataset
-- **Source**: Binder et al. (2016)
-- **Data Format**: 65-dimensional vectors covering perceptual, motor, spatial, temporal, emotional, social, and cognitive modalities
-- **Total Concepts**: 535
-- **Official Sources:**
-  - 
+### Human-like Binary Representations
+Derived using a **spiking neural network** (SNN) trained in **BrainCog** (https://github.com/BrainCog-X/Brain-Cog), based on the methodology in: 
+**Wang, Y.**, Zeng, Y., et al. (2023).   *A Brain-inspired Computational Model for Human-like Concept Learning* DOI: [10.1016/j.patter.2023.100789](https://doi.org/10.1016/j.patter.2023.100789)
 
-### Text-derived Representation Datasets
-#### GloVe Dataset
-- **Source:** [GloVe embeddings](https://nlp.stanford.edu/projects/glove/)
-- **Format**: 300-dimensional word embeddings (glove-wiki-gigaword-300)
+- Output: Binary vectors (`2500` bits) for each concept
 
-### Word2Vec Dataset
-- **Source:** [Word2Vec](https://code.google.com/archive/p/word2vec/)
-- **Format:** 300-dimensional word embeddings
-
-
-## Implementation Structure
-
-### Data processing
-- **SensoryData**: Multisensory vectors processed to represent concepts as sensory intensities.  
-- **TextData**: Text-derived concept representations converted to dense vectors. 
-
-### Generating Concept Representations (SNN Model)
-Used [BrainCog](https://github.com/BrainCog-X/Brain-Cog) to build and run the **spiking neural network model**:
-- Based on the methodology from Zeng et al. (2023) [DOI](https://doi.org/10.1016/j.patter.2023.100789)
-- **Output**: Human-like concept vectors (binary/spike representations) saved in `.npy` or `.csv` for downstream use in Clarion.
 @article{Zeng2023,
   doi = {10.1016/j.patter.2023.100789},
   url = {https://doi.org/10.1016/j.patter.2023.100789},
@@ -61,30 +31,44 @@ Used [BrainCog](https://github.com/BrainCog-X/Brain-Cog) to build and run the **
   journal = {Patterns}
 }
 
-### Clarion Model
-- Concept vectors from BrainCog are loaded into Clarion as **perceptual chunks**.
-- Each vector = one concept chunk, processed in Clarion’s **New Association Subsystem (NACS)**.
-- These chunks are used in **categorization tasks**, simulating human concept learning and classification.
+## Evaluation Tasks
 
-### Testing and Evaluation
-- Evaluate the model against human similarity judgments using datasets such as SimLex999, MEN, and MTurk771.
-- Perform comparative analysis with:
-  1. Multisensory-only model
-  2. Text-derived-only model
-  3. Original SNN model
-  4. Proposed Clarion-based model (this project)
+Evaluated on the **MTurk771 dataset**, where each concept pair has a human similarity score.  
+The model:
+- Inputs one concept from each pair
+- Computes similarity to others using Clarion’s bottom-up spreading
+- Ranks all stored concepts
+- Outputs a ranked list to be compared with human-annotated rankings
+
+### Comparative Evaluation
+We compare:
+1. **Clarion without SNN binary features**
+2. **Clarion with SNN-derived binary features**
+3. **Original human MTurk771 scores**
 
 
-## Requirements
-This project uses two frameworks with **conflicting Python version requirements**.  
-To ensure smooth operation, use **separate environments** for each tool.
+## Environment Setup
 
-### BrainCog Environment (Concept Vector Generation)
-- **Python ≤ 3.9** 
-- Required Packages:
-  - `BrainCog`
+| Tool        | Purpose                        | Python Version | Installation              |
+|-------------|--------------------------------|----------------|---------------------------|
+| **BrainCog**| Generate SNN concept vectors   | ≤ 3.9          | `pip install braincog`    |
+| **pyClarion**| Build and run Clarion model    | ≥ 3.12         | `pip install pyclarion`   |
 
-### pyClarion Environment (Clarion Modeling)
-- **Python ≥ 3.12** 
-- Required Packages:
-  - `pyClarion`
+Use separate environments for each tool
+
+## Running the Simulation
+
+### 1. Prerequisites
+Download the following files:
+- `LC823_Merged.xlsx` and `AM_binarycode.pkl` → `data/processedData/`
+- `EN-MTurk-771.txt` → `data/rawData/`
+
+#### Required Code Files:
+- `model_input.py` – contains the `load_concept_data()` function
+- `model.py` – the main simulation script  
+
+### 2. Run the Model
+```bash
+cd src/
+python model.py
+```

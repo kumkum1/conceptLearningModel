@@ -1,14 +1,12 @@
 from pyClarion import Atom, Atoms, Family, Chunk, Agent, ChunkStore, Input
 import pandas as pd
 import numpy as np
-from model_input import load_concept_data
 
-# Load Data
-concept_pairs, Human_scores = load_concept_data()
 LC823_Merged = pd.read_excel("./data/processedData/LC823_Merged.xlsx")  
 vectors = pd.read_pickle("./data/processedData/AM_binarycode.pkl")
-concepts = list(set([c for pair in concept_pairs for c in pair]))
-concept_vectors = pd.Series({concept: vectors[concept] for concept in concepts}).apply(lambda x: list(x))
+concepts = list(LC823_Merged["Concept"])[:3]
+concept_vectors = {concept: vectors[concept] for concept in concepts}
+concept_vectors = pd.Series(concept_vectors).apply(lambda x: list(x))
 
 # === Keyspace Definitions ===
 class Concept(Atoms): 
@@ -57,63 +55,57 @@ class ConceptAgent(Agent):
 # === Knowledge Initialization ===
 def init_stimuli(d: ConceptFeature, concepts: list[str], df: pd.DataFrame) -> list[Chunk]:
     feature, concept, bit = d.feature, d.concept, d.bits
-    chunk_list = []
-    chunk_dict = {}
+    chunk_defs = []
 
     for concept in concepts:
         row = df[df["Concept"] == concept].iloc[0]
         bits = concept_vectors[concept]
 
-        chunk = ( concept ^ 
+        chunk = (
+            concept ^ 
             + row["Auditory"] * (feature.auditory ** feature.auditory)
             + row["Gustatory"] * (feature.gustatory ** feature.gustatory)
             + row["Haptic"] * (feature.haptic ** feature.haptic)
             + row["Olfactory"] * (feature.olfactory ** feature.olfactory)
             + row["Visual"] * (feature.visual ** feature.visual)
-        )
+      )
         for i in range(2500):
             if bits[i] == '1':
                 chunk += (feature[f"bit_{i}"] ** bit._1)
             else:   
                 chunk -= (feature[f"bit_{i}"] ** bit._0)
 
-        
-        chunk_list.append(chunk)
-        chunk_dict[concept] = chunk
-    return chunk_list, chunk_dict
+        chunk_defs.append(chunk)
+    return chunk_defs
+
 
 # === Event Processing ===
 agent = ConceptAgent("agent")
-stimuli_list, stimuli_dict = init_stimuli(agent.d, concepts, LC823_Merged)
-agent.store.compile(*stimuli_list)
+stimuli = init_stimuli(agent.d, concepts, LC823_Merged)
+agent.store.compile(*stimuli)
 
 while agent.system.queue: 
-    agent.system.advance()
+    event = agent.system.advance()
+    # print(event.describe())
 
-pair_scores = []
+probe = ~stimuli[1] 
+agent.tlInput.send({probe: 1.0})  
 
-for c1, c2 in concept_pairs:
-    probe = ~stimuli_dict[c1]  
-    agent.tlInput.send({probe: 1.0})
+while agent.system.queue: 
+    event = agent.system.advance()
+    # print(event.describe()) 
 
-    while agent.system.queue:
-        agent.system.advance()
+# print(agent.store.td.main[0])
+# print(agent.store.bu.weights[0])
 
-    activation = agent.store.main[0]
-    score = activation[~stimuli_dict[c2]] if ~stimuli_dict[c2] in activation else 0.0
-    pair_scores.append(((c1, c2), score))
+similarity_vector = agent.store.main[0] 
 
+ranked = sorted(
+    [(k, similarity_vector[k]) for k in similarity_vector],
+    key=lambda x: x[1],
+    reverse=True
+)
 
-# === Dispay results ===
-pair_scores.sort(key=lambda x: x[1], reverse=True)
-
-Model_scores = pd.DataFrame({
-    "Concept pairs": [f"{c1}-{c2}" for (c1, c2), _ in pair_scores],
-    "Model Scores": [score for (_, _), score in pair_scores]
-})
-
-Model_scores["Model Rank"] = Model_scores["Model Scores"].rank(ascending=False, method="min").astype(int)
-Model_scores = Model_scores.sort_values(by="Model Rank")
-comparison_df = pd.merge(Human_scores, Model_scores, on="Concept pairs")
-print("\n=== Comparison Table ===")
-print(comparison_df[["Concept pairs", "Human Scores", "Rank", "Model Scores", "Model Rank"]])
+print(f"\nSimilarity ranking for: {probe}")
+for rank, (concept, score) in enumerate(ranked, 1):
+    print(f"{rank}. {concept}: {score:.3f}")
