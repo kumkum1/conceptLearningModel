@@ -1,3 +1,13 @@
+"""
+This script loads two popular pre-trained text embedding models using Gensim's API:
+1. GloVe (glove-wiki-gigaword-300)
+2. Word2Vec (word2vec-google-news-300)
+
+Note: These text-derived embeddings are not used in the current version of the
+Clarion-based concept learning model. 
+
+"""
+
 import gensim.downloader as api
 
 # GloVe 

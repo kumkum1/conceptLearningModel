@@ -1,3 +1,14 @@
+"""
+This script merges two key multisensory datasets from Lynott & Connell (2009, 2013)—
+one containing adjectives and the other containing nouns. Each word is represented
+by average perceptual strength ratings across five sensory modalities:
+Auditory, Gustatory, Haptic, Olfactory, and Visual.
+
+References:
+- Lynott, D., & Connell, L. (2009). Modality exclusivity norms for 423 adjectives.
+- Lynott, D., & Connell, L. (2013). Modality exclusivity norms for 400 nouns.
+"""
+
 import pandas as pd
 import numpy as np
 
@@ -35,6 +46,16 @@ merged_data.to_excel("./data/processedData/LC823_Merged.xlsx", index=True)
 
 
 def get_sensory_representation(word):
+    """
+    Retrieves the sensory representation of a given word from the merged data.
+
+    Args:
+        word (str): The word for which the sensory representation is to be retrieved.
+
+    Returns:
+        numpy.ndarray: A NumPy array containing the sensory representation of the word, or
+        an array of zeros if the word is not found.
+    """
     row = merged_data[merged_data["Concept"].str.lower() == word.lower()]
     if not row.empty:
         return np.array(row.iloc[0, 1:], dtype=np.float32)  

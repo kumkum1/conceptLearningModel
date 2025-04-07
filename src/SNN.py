@@ -1,3 +1,12 @@
+"""
+This script generates human-like binary concept representations using a  spiking neural network (SNN)
+architecture inspired by the brain. It simulates concept-level activity using multisensory inputs 
+(from the LC823 dataset) and converts the resulting spike patterns into compact binary codes.
+
+These binary codes are used in downstream cognitive modeling tasks, such as 
+concept similarity evaluation in the Clarion framework.
+"""
+
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 __author__ = 'Yuwei Wang'
