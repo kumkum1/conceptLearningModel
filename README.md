@@ -63,7 +63,7 @@ Download the following files:
 - `LC823_Merged.xlsx` and `AM_binarycode.pkl` → `data/processedData/`
 - `EN-MTurk-771.txt` → `data/rawData/`
 
-#### Required Code Files:
+Required Code Files:
 - `model_input.py` – contains the `load_concept_data()` function
 - `model.py` – the main simulation script  
 
